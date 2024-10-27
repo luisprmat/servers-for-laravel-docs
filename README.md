@@ -11,7 +11,7 @@ git config --global user.name "Su Nombre Usuario"
 git config --global user.email usuario@micorreo.com
 ```
 Es importante poner el mismo correo con el que se registró en [Github](https://github.com) para que los cambios se asocien al usuario con ese correo.
-- **Git Bash**. Es la terminal que usaré para acceder a las instancias EC2 por SSH (*Secure Shell*), ya que meneja la sintaxis de linux (que el SO de las instancias que usaré) y también para correr los comandos propios de laravel `php artisan <command>`, `npm run ...`, etc. Esta terminal se instala con *Git* (punto anterior). Para Windows también existen muy buenas terminales de comandos, en ese caso recomendaría instalar [Powershell ^7.4](https://learn.microsoft.com/es-es/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#winget) que tiene muy buenas prestaciones.
+- **Git Bash**. Es la terminal que usaré para acceder a las instancias EC2 por SSH (*Secure Shell*), ya que maneja la sintaxis de linux (que el SO de las instancias que usaré) y también para correr los comandos propios de laravel `php artisan <command>`, `npm run ...`, etc. Esta terminal se instala con *Git* (punto anterior). Para Windows también existen muy buenas terminales de comandos, en ese caso recomendaría instalar [Powershell ^7.4](https://learn.microsoft.com/es-es/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#winget) que tiene muy buenas prestaciones.
 - [**Laragon**](https://laragon.org/download). (versión 6 o superior) Es una completa suite de herramientas de desarrollo para aplicaciones web que incluye:
     - *Servidores* (Apache, Nginx) Usaré [**Nginx**](https://nginx.org/en/) ya que será el mismo que instalaré en las instancias EC2.
     - *Motores de base de datos* (Mysql, Postgree, Redis).
@@ -29,3 +29,33 @@ Es importante poner el mismo correo con el que se registró en [Github](https://
     | PHP | 8.3.13 |
     | Nginx | 1.26.2 |
     | Mysql | 8.0.39 |
+
+## Requisitos para los servidores de Laravel
+De acuerdo a la [documentación oficial](https://laravel.com/docs/11.x/deployment#server-requirements) tenemos los siguientes requisitos para el servidor:
+- PHP >= 8.2
+- Ctype PHP Extension
+- cURL PHP Extension
+- DOM PHP Extension
+- Fileinfo PHP Extension
+- Filter PHP Extension
+- Hash PHP Extension
+- Mbstring PHP Extension
+- OpenSSL PHP Extension
+- PCRE PHP Extension
+- PDO PHP Extension
+- Session PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+
+Estas dependencias pueden variar dependiendo de lo que realmente necesita el proyecto o lo que la organización planea usar, pero por ahora, nos ceñiremos a la lista a continuación para ahorrar un poco de tiempo:
+
+- NginX HTTP Server
+- PHP-FPM
+- Zip PHP Extension
+- GD PHP Extension
+- PHP CLI
+- [Composer](https://getcomposer.org)
+- MySQL PHP Extension
+- Amazon **RDS** *para manejar* `MySQL server` (También es posible instalar `MySQL Server` directamente en la instancia **EC2**)
+
+
