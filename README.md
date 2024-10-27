@@ -1,7 +1,7 @@
 # Servidores para Laravel en AWS
-Aquí trato de documentar mi experiencia desplegando un proyecto de [Laravel](https://laravel.com) a una instancia EC2 (*Elastic Computing Cloud*) de [AWS](https://aws.amazon.com) (Amazon Web Services) y los servicios utilizados.
+Aquí tratamos de agregar documentación que responda a la pregunta ¿Cómo desplegar un proyecto de [Laravel](https://laravel.com) en una instancia EC2 (*Elastic Computing Cloud*) de [AWS](https://aws.amazon.com) (Amazon Web Services)? y los servicios adicionales que se podrían utilizar.
 
-Estará en español y se trabajará desde un computador con sistema operativo **Windows 11 x64 (bits)**.
+Este tutorial estará en español y lo trabajaremos desde un computador con sistema operativo **Windows 11 x64 (bits)**.
 
 ## Herramientas instaladas
 Para el desarrollo y despliegue del proyecto se tienen instaladas las siguientes herramientas de software:
@@ -11,9 +11,9 @@ git config --global user.name "Su Nombre Usuario"
 git config --global user.email usuario@micorreo.com
 ```
 Es importante poner el mismo correo con el que se registró en [Github](https://github.com) para que los cambios se asocien al usuario con ese correo.
-- **Git Bash**. Es la terminal que usaré para acceder a las instancias EC2 por SSH (*Secure Shell*), ya que maneja la sintaxis de linux (que el SO de las instancias que usaré) y también para correr los comandos propios de laravel `php artisan <command>`, `npm run ...`, etc. Esta terminal se instala con *Git* (punto anterior). Para Windows también existen muy buenas terminales de comandos, en ese caso recomendaría instalar [Powershell ^7.4](https://learn.microsoft.com/es-es/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#winget) que tiene muy buenas prestaciones.
+- **Git Bash**. Es la terminal que se usará para acceder a las instancias EC2 por SSH (*Secure Shell*), ya que maneja la sintaxis de linux (que el SO de las instancias que usaré) y también para correr los comandos propios de laravel `php artisan <command>`, `npm run ...`, etc. Esta terminal se instala con *Git* (punto anterior). Para Windows también existen muy buenas terminales de comandos, en ese caso recomendaría instalar [Powershell ^7.4](https://learn.microsoft.com/es-es/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#winget) que tiene muy buenas prestaciones.
 - [**Laragon**](https://laragon.org/download). (versión 6 o superior) Es una completa suite de herramientas de desarrollo para aplicaciones web que incluye:
-    - *Servidores* (Apache, Nginx) Usaré [**Nginx**](https://nginx.org/en/) ya que será el mismo que instalaré en las instancias EC2.
+    - *Servidores* (Apache, Nginx) Usaré [**Nginx**](https://nginx.org/en/) ya que será el mismo que instalaremos en las instancias EC2.
     - *Motores de base de datos* (Mysql, Postgree, Redis).
     - *Administradores de Base de datos* (HeidiSql, Adminer) - usaré [**HeidiSql**](https://www.heidisql.com) para acceder a base de datos *Sqlite* o *MySql* con host público.
     - *Terminales* (Cmder)
@@ -57,5 +57,4 @@ Estas dependencias pueden variar dependiendo de lo que realmente necesita el pro
 - [Composer](https://getcomposer.org)
 - MySQL PHP Extension
 - Amazon **RDS** *para manejar* `MySQL server` (También es posible instalar `MySQL Server` directamente en la instancia **EC2**)
-
 
