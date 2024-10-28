@@ -74,6 +74,33 @@ o en la barra de búsqueda:
 1. En la segunda fila del panel, hay una tarjeta llamada **Lanzar la instancia**. Los servidores se denominan instancias en EC2. Haga clic en el botón **Lanzar la instancia** para continuar.
 <img src="https://github.com/user-attachments/assets/74385c6c-c136-426f-b0f7-cdbf219c0a3b" alt="lanzar la instancia" width="50%">
 
+## Instalar supervisor para correr workers y websockets en producción
+- Nos conectamos a la EC2
+- Entramos como super usuario `sudo su -`
+- Instalamos supervisor `apt install supervisor`
+- Nos vamos a al directorio de configuración `cd /etc/supervisor/conf.d`
+- Creamos un archivo de configuración `nano app-workers.conf`
+- Escribimos la configuración
+
+```
+[program:laravel-reverb]
+process_name=%(program_name)s
+command=php /home/web/game/artisan reverb:start
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+numprocs=1
+minfds=10000
+redirect_stderr=true
+stdout_logfile=/home/web/game/storage/logs/reverb.log
+stopwaitsecs=3600
+stdout_logfile_maxbytes=5MB
+user=web
+```
+
+- Guardamos y ejecuramos `sudo supervisorctl reread` seguido de `sudo supervisorctl update`
+
 
 
 
