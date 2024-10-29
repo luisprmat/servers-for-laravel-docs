@@ -85,7 +85,7 @@ o en la barra de búsqueda:
 ```
 [program:laravel-reverb]
 process_name=%(program_name)s
-command=php /home/web/game/artisan reverb:start
+command=php /home/web/project/artisan reverb:start
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -93,18 +93,94 @@ killasgroup=true
 numprocs=1
 minfds=10000
 redirect_stderr=true
-stdout_logfile=/home/web/game/storage/logs/reverb.log
+stdout_logfile=/home/web/project/storage/logs/reverb.log
 stopwaitsecs=3600
 stdout_logfile_maxbytes=5MB
 user=web
 ```
 
-- Guardamos y ejecuramos `sudo supervisorctl reread` seguido de `sudo supervisorctl update`
+- Guardamos y ejecutamos `sudo supervisorctl reread` seguido de `sudo supervisorctl update`
 
+## Agregar a un sitio un certificado SSL desde Let's Encrypt
+- Nos conectamos a la EC2 por `ssh`
+- Entramos como super usuario `sudo su -`
+- Instalamos **CertBot** `snap install --classic certbot` obteniendo algo como
 
+```
+root@ip-172-31-91-169:~# snap install --classic certbot
+certbot 2.11.0 from Certbot Project (certbot-eff✓) installed
+root@ip-172-31-91-169:~#
+```
+- Ya que **CertBot** modifica la configuracion de `nginx` debemos guardar un respaldo del archivo de configuracion del servidor
+`cp /etc/nginx/sites-available/project /etc/nginx/sites-available/project-backup`
+- Corremos **CertBot**: `certbot --nginx`, obtenemos:
 
+```
+root@ip-172-31-91-169:~# certbot --nginx
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Enter email address (used for urgent renewal and security notices)
+ (Enter 'c' to cancel):
+```
 
+- Agregamos  nuestra dirección de *email*
+  
+```
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Please read the Terms of Service at
+https://letsencrypt.org/documents/LE-SA-v1.4-April-3-2024.pdf. You must agree in
+order to register with the ACME server. Do you agree?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(Y)es/(N)o:
+```
 
+- Respondemos afirmativamente **Y**
 
+```
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Would you be willing, once your first certificate is successfully issued, to
+share your email address with the Electronic Frontier Foundation, a founding
+partner of the Let's Encrypt project and the non-profit organization that
+develops Certbot? We'd like to send you email about our work encrypting the web,
+EFF news, campaigns, and ways to support digital freedom.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(Y)es/(N)o:
+```
 
+- También respondemos afirmativamente **Y**
 
+```
+Account registered.
+
+Which names would you like to activate HTTPS for?
+We recommend selecting either all domains, or all domains in a VirtualHost/server block.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: triqui.luisparrado.xyz
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate numbers separated by commas and/or spaces, or leave input
+blank to select all options shown (Enter 'c' to cancel):
+```
+
+- Aquí nos lista los dominios y nos pregunta a cuales desea agregar el certificado SSL, respondemos separando por comas los numerales de todos los dominios, en este caso que solo hay uno pues digitamos el numeral **1**
+
+```
+Requesting a certificate for triqui.luisparrado.xyz
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/triqui.luisparrado.xyz/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/triqui.luisparrado.xyz/privkey.pem
+This certificate expires on 2025-01-27.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
+
+Deploying certificate
+Successfully deployed certificate for triqui.luisparrado.xyz to /etc/nginx/sites-enabled/game
+Congratulations! You have successfully enabled HTTPS on https://triqui.luisparrado.xyz
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+root@ip-172-31-91-169:~#
+```
+- Ya podemos ingresar nuevamente con el protocolo seguro *HTTPS*, ¡Genial!
