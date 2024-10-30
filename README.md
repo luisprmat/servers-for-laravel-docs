@@ -360,13 +360,12 @@ Con externo nos referimos a que la conexión se hace por fuera del servidor, en 
 - Ahora llenamos los datos de la pestaña **Túnel SSH**
     - **Ejecutable SSH**: ssh.exe
     - **Host SSH + Puerto**: ec2-34-201-175-185.compute-1.amazonaws.com, **Puerto**: 22
+      
     Aquí copiamos la dirección *DNS de IPv4 pública* que podemos ver en las propiedades de la instancia en la consola de AWS.
     ![ec2-public-host](https://github.com/user-attachments/assets/86943256-c6d9-418e-8f49-224125729ad6)
     - **Nombre de usuario**: ubuntu
     - **Archivo de llave privada**: aqui le damos explorar y buscamos el archivo `.pem` que generamos con el par de claves de la instancia y que usamos para acceder vía SSH.
-    Los demás campos los dejamos con sus valores por defecto y le damos click en *Abrir* guardando los cambios en la sesión.
-Ahora podemos administrar la base de datos desde esta herramienta.
-  
-
     
-    - 
+    Los demás campos los dejamos con sus valores por defecto y le damos click en *Abrir* guardando los cambios en la sesión.
+
+Ahora podemos administrar la base de datos desde esta herramienta.
