@@ -1,7 +1,7 @@
 # Servidores para Laravel en AWS
 Aquí tratamos de agregar documentación que responda a la pregunta ¿Cómo desplegar un proyecto de [Laravel](https://laravel.com) en una instancia EC2 (*Elastic Computing Cloud*) de [AWS](https://aws.amazon.com) (Amazon Web Services)? y los servicios adicionales que se podrían utilizar.
 
-Este tutorial estará en español y lo trabajaremos desde un computador con sistema operativo **Windows 11 x64 (bits)**.
+Este tutorial estará en español y lo trabajaremos desde un computador con sistema operativo **Windows 11 x64 (bits)** donde subiremos una aplicación llamada `game` y consiste en un juego de triqui o tres en linea que requiere websockets para que los jugadores vean los cambios en vivo (esa parte es super interesante), por cierto este es el [repositorio](https://github.com/luisprmat/game) si se quiere ver la app.
 
 ## Herramientas instaladas
 Para el desarrollo y despliegue del proyecto se tienen instaladas (localmente) las siguientes herramientas de software:
@@ -85,7 +85,7 @@ o en la barra de búsqueda:
 ```
 [program:laravel-reverb]
 process_name=%(program_name)s
-command=php /home/web/project/artisan reverb:start
+command=php /home/web/game/artisan reverb:start
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -93,7 +93,7 @@ killasgroup=true
 numprocs=1
 minfds=10000
 redirect_stderr=true
-stdout_logfile=/home/web/project/storage/logs/reverb.log
+stdout_logfile=/home/web/game/storage/logs/reverb.log
 stopwaitsecs=3600
 stdout_logfile_maxbytes=5MB
 user=web
@@ -184,3 +184,163 @@ If you like Certbot, please consider supporting our work by:
 root@ip-172-31-91-169:~#
 ```
 - Ya podemos ingresar nuevamente con el protocolo seguro *HTTPS*, ¡Genial!
+
+## Instalar y asegurar MySQL Server 8 en Ubuntu 22.04 (EC2)
+Instrucciones básicas:
+- Nos conectamos a la EC2 por `ssh`
+- Entramos como super usuario `sudo su -`
+- Instalamos el servidor de **MySQL**: `apt install mysql-server` y esperamos que termine la instalación.
+
+Teniendo en cuenta que el usuario `root` que viene por defecto no admite autenticación con contraseña lo que podría ser un *problema de seguridad*, ingresamos y alteramos el usuario `root` para que admita contraseña.
+- Ingresamos a `mysql`
+- `mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '12345678';`, reemplazando obviamente `'12345678'` por una contraseña segura; así obtenemos algo como
+
+```
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '12345678';
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+```
+- Ya podemos cerrar la conexión de **MySQL**: `mysql> exit;` y la próxima vez entrar con la contraseña (`mysql` denega el acceso si no se pone contraseña)
+
+```
+root@ip-172-31-91-169:~# mysql -u root -p
+Enter password:
+```
+Digitamos el password asignado y
+
+```
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.39-0ubuntu0.24.04.2 (Ubuntu)
+
+Copyright (c) 2000, 2024, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql>
+```
+
+Siguiendo con permisos de superusuario ahora nos encargaremos de asegurar la instalación de *MySQL*, ¿porqué? primero para hacer algunas validaciones de seguridad y remover un usuario anónimo que viene por defecto con `mysql` para hacer tests, Procedamos
+
+```
+root@ip-172-31-91-169:~# mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Enter password for user root:
+```
+Digitamos la contraseña
+
+```
+VALIDATE PASSWORD COMPONENT can be used to test passwords
+and improve security. It checks the strength of password
+and allows the users to set only those passwords which are
+secure enough. Would you like to setup VALIDATE PASSWORD component?
+
+Press y|Y for Yes, any other key for No:
+```
+
+Aquí nos pregunta si queremos instalar el componente de validación de contraseñas el cual nos ayuda a asegurar que todas las contraseñas para todos los usuarios de *mysql* sean seguras. En esta ocasión vamos a responder con un *No* (basta con presionar **ENTER** ) para poder usar contraseñas sencillas de ejemplo pero en la realidad debiera ser un *Si*.
+
+```
+Using existing password for root.
+Change the password for root ? ((Press y|Y for Yes, any other key for No) :
+```
+
+Nos pregunta si queremos cambiar la contraseña del usuario `root`, responderé *No* (basta con presionar **ENTER** ) por facilidad pero obviamente es bueno poner una contraseña segura.
+
+```
+ ... skipping.
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) :
+```
+
+Nos pregunta si queremos remover los usuarios anónimos que vienen por defecto, nuestra respuesta será afirmativa: **Y**
+
+```
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : Y
+Success.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) :
+```
+
+Ahora nos pregunta si queremos prevenir conexiones con el usuario `root` desde fuera del servidor. Responderemos afirmativamente **Y** ya que crearemos usuarios diferentes con menos privilegios para administrar las aplicaciones y a ellos si les permitiremos conexiones externas como por ejemplo desde *HeidiSQL*
+
+```
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : Y
+Success.
+
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) :
+```
+
+Nos pregunta si queremos quitar una base de datos llamada `test` que viene para hacer pruebas. Nuestra respuesta será afirmativa **Y**
+
+```
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : Y
+ - Dropping test database...
+Success.
+
+ - Removing privileges on test database...
+Success.
+
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) :
+```
+
+Finalmente nos pregunta si queremos recargar los privilegios en el servidor de *MySQL*, responderemos afirmativamente (**Y**) para que nuestros cambios surtan efecto.
+
+```
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : Y
+Success.
+
+All done!
+root@ip-172-31-91-169:~#
+```
+
+Y ¡listo!, tenemos asegurada nuestra conexión a **MySQL**.
+
+### Crear base de datos y usuario para nuestra aplicación
+Para entrar a mysql ya no es necesario entrar como superusuario así que podemos cerrar la sesión `root` y quedamos en la sesión `ubuntu` por defecto
+
+```
+root@ip-172-31-91-169:~# exit
+logout
+ubuntu@ip-172-31-91-169:~$
+```
+
+Desde esta consola entramos al usuario `root` de *MySQL* (No confundir con el usuario `root` de linux): `ubuntu@ip-172-31-91-169:~$mysql -u root -p` y después de poner la contraseña estamos en el bash de `mysql>`
+
+- Ahora procedemos a crear la base de datos para nuestra aplicación: `CREATE DATABASE game CHARACTER SET utf8 COLLATE utf8_unicode_ci;` obteniéndose
+
+```
+mysql> CREATE DATABASE game CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+Query OK, 1 row affected, 2 warnings (0.02 sec)
+```
+
+- Ahora procedemos a crear un usuario para nuestra aplicación: `CREATE USER 'game'@'localhost' IDENTIFIED BY '12345678';`
+- Luego le asignamos a este usuario privilegios sobre todas las tablas de la base de datos creada anteriormente: `GRANT ALL PRIVILEGES ON game.* TO 'game'@'localhost';`
+- Ahora corremos `FLUSH PRIVILEGES;` para limpiar la caché del servidor de *MySQL* y podemos salir de la conexión `exit;`
