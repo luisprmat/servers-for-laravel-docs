@@ -75,7 +75,7 @@ Alternativamente, puede encontrarlo en el menú de *Servicios* en la categoría 
 1. Ingresamos un nombre para la instancia.
 <br><img src="https://github.com/user-attachments/assets/5fd08c08-f0af-46f7-808f-0b4a9298ac08" alt="Nombre de la instancia" width="70%"><br>
 1. Elegimos una imagen de *Sistema Operativo*. Elegimos **Ubuntu** porque ofrece herramientas listas para usar y no necesita ninguna instalación personalizada de paquetes.
-![EC2 SO](https://github.com/user-attachments/assets/39fcd62b-a786-48f8-8bc0-c53cd6218d1d)
+<br><img src="https://github.com/user-attachments/assets/39fcd62b-a786-48f8-8bc0-c53cd6218d1d" alt="EC2 SO" width="80%"><br>
 1. Para nuestros fines, dejamos el tipo de instancia **t2.micro** sin cambios, ya que tal vez no necesitemos más potencia y además está en *el nivel gratuito*.
 Según los requisitos del proyecto, es posible que cambiar esta configuración por algo más potente. Además aparecen los costos de mantenimiento de la instancia cuando se supere el nivel gratuito.
 <br><img src="https://github.com/user-attachments/assets/96fe6d77-cd41-4fa1-8747-0654a78e2900" alt="Elección tipo de instancia" width="80%"><br>
@@ -83,7 +83,14 @@ Según los requisitos del proyecto, es posible que cambiar esta configuración p
 <br><img src="https://github.com/user-attachments/assets/17148492-5406-42d5-9a23-c13068e6ab9c" alt="Nuevo par de claves" width="80%"><br>
 <img src="https://github.com/user-attachments/assets/bd5f1168-0cc7-45c3-a780-85b1f4f7936b" alt="Crear par de claves" width="60%"><br>
 Cuando hagamos click en **Crear par de claves** nos solicitará guardar el archivo `ec2-ubuntu-app-server.pem` en nuestro computador, es muy importante porque esa será la identificación para poder acceder mediante *SSH* desde nuestro pc. Es buena práctica guardar este archivo en la raiz de la carpeta del usuario dentro de una carpeta "oculta" llamada `.ssh`. En nuestro caso que es *Windows* lo guardaremos en `C:\Users\%USERPROFILE%\.ssh`, en *Linux* se guarda por lo general en `/home/<user>/.ssh`.
-
+1. En la **Configuraciones de Red**, elija **Mi IP**, para permitir el acceso solo desde su dirección IP, aunque a veces es posible que desee dejarlo desde **Cualquier lugar**, pero no se recomienda, o agregar sus reglas personalizadas. Marque **Permitir el tráfico de HTTPS desde Internet** y **Permitir el tráfico HTTP desde Internet**, ya que estamos configurando un servidor web y queremos que se acepten conexiones en los puertos 80 y 443 de forma predeterminada. Si es la primera vez que creas una instancia *EC2* posiblemente te salga algo como
+<br><img src="https://github.com/user-attachments/assets/20144d77-3019-4b05-8b1e-1f8fbae59417" alt="EC2 Configuracion de red" width="80%"><br>
+1. Luego deberíamos configurar el almacenamiento para agregar más volúmenes o volúmenes más grandes para los datos. No modificaremos este aspecto por ahora.
+<br><img src="https://github.com/user-attachments/assets/631cebbf-890b-4f0f-aa7d-7892d0db4db7" alt="EC2 Almacenamiento" width="80%"><br>
+1. No es necesario realizar cambios en la sección **Detalles avanzados**. Revisamo el resumen en la barra lateral derecha y presionamos el botón **Lanzar instancia** en la esquina inferior derecha.
+<br><img src="https://github.com/user-attachments/assets/c35d93b5-d23b-4b8d-a99f-54609cd7a959" alt="EC2 Resumen" width="30%"><br>
+Después de eso deberíamos ver que el lanzamiento se inició exitosamente:
+<br><img src="https://github.com/user-attachments/assets/302e1eec-ab0d-4f66-b268-cc8810b6b789" alt="Iniciar instancia" width="80%"><br>
 
 ## Instalar supervisor para correr workers y websockets en producción
 - Nos conectamos a la EC2
